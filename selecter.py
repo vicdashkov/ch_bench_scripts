@@ -1,10 +1,10 @@
 import time
 from clickhouse_driver import Client
 
-from scripts import selecter_config
-from scripts.utils import format_date_from_timestamp
+import selecter_config
+from utils import format_date_from_timestamp
 
-client = Client('localhost', secure=True, ca_certs='./server.crt')
+client = Client('localhost')
 
 
 def select_with_timing() -> float:

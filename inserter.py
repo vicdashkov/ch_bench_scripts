@@ -5,9 +5,9 @@ import asyncpool
 from aioch import Client
 import datetime
 import time
-from scripts import inserter_config
-from scripts.inserter_config import generate_random_event
-from scripts.utils import format_date_from_timestamp
+
+import inserter_config
+from utils import format_date_from_timestamp
 
 total_inserted_events = 0
 pool = {}
@@ -42,7 +42,7 @@ def return_connection(connection_id):
 
 
 def generate_random_events(event_date: datetime.datetime, number_events: int) -> list:
-    return [generate_random_event(event_date) for _ in range(number_events)]
+    return [inserter_config.generate_random_event(event_date) for _ in range(number_events)]
 
 
 async def fill_events(_loop, number_per_day, bulk_size):
