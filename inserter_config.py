@@ -1,14 +1,15 @@
 import datetime
+import os
 import random
 import sys
 
-HOST = "localhost"
-TABLE_NAME = "event_time_batch"
-BULK_SIZE = 1000
-EVENTS_PER_DAY = 1000000
-WORKERS = 5
-DB_NAME = "merge_tree"
-
+HOST = os.getenv("HOST", "localhost")
+TABLE_NAME = os.getenv("TABLE_NAME")
+BULK_SIZE = int(os.getenv("BULK_SIZE", 1))
+EVENTS_PER_DAY = int(os.getenv("EVENTS_PER_DAY", 10))
+WORKERS = int(os.getenv("WORKERS", 10))
+DB_NAME = os.getenv("DB_NAME")
+HAS_DATE_COLUMN = False if int(os.getenv("HAS_DATE_COLUMN", 0)) == 0 else True
 
 def generate_random_event(event_date: datetime.datetime) -> dict:
     event_id = random.randint(0, sys.maxsize)
@@ -18,9 +19,14 @@ def generate_random_event(event_date: datetime.datetime) -> dict:
         hour=random.randint(0, 23),
         minute=random.randint(0, 59))
 
-    return {
+    return_value = {
         "id": event_id,
         "time": event_datetime,
         "type": event_type,
         "pokemon_id": pokemon_id
     }
+
+    if HAS_DATE_COLUMN:
+        return_value["date"] = datetime.date(event_datetime)
+
+    return return_value
