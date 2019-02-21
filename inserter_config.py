@@ -27,6 +27,6 @@ def generate_random_event(event_date: datetime.datetime) -> dict:
     }
 
     if HAS_DATE_COLUMN:
-        return_value["date"] = datetime.date(event_datetime)
+        return_value["date"] = event_datetime.date()
 
     return return_value
