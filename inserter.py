@@ -1,10 +1,12 @@
 import asyncio
+import datetime
 import logging
+import random
+import sys
+import time
 
 import asyncpool
 from aioch import Client
-import datetime
-import time
 
 import inserter_config
 from utils import format_date_from_timestamp
@@ -26,6 +28,27 @@ def get_connection():
             return i, val['c']
 
 
+def generate_random_event(event_date: datetime.datetime) -> dict:
+    event_id = random.randint(0, sys.maxsize)
+    event_type = random.randint(0, 3)
+    pokemon_id = random.randint(0, 10)
+    event_datetime = event_date.replace(
+        hour=random.randint(0, 23),
+        minute=random.randint(0, 59))
+
+    return_value = {
+        "id": event_id,
+        "time": event_datetime,
+        "type": event_type,
+        "pokemon_id": pokemon_id
+    }
+
+    if inserter_config.HAS_DATE_COLUMN:
+        return_value["date"] = event_datetime.date()
+
+    return return_value
+
+
 async def write_to_event(data: list, _):
     global total_inserted_events
     print(f"writing to {inserter_config.TABLE_NAME} {len(data)} rows; total count: {total_inserted_events}")
@@ -42,7 +65,7 @@ def return_connection(connection_id):
 
 
 def generate_random_events(event_date: datetime.datetime, number_events: int) -> list:
-    return [inserter_config.generate_random_event(event_date) for _ in range(number_events)]
+    return [generate_random_event(event_date) for _ in range(number_events)]
 
 
 async def fill_events(_loop, number_per_day, bulk_size):
